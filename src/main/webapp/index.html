@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Biblioteca - Cadastro</title>
+        <title>Biblioteca - Início</title>
         <meta charset="UTF-8">
+        <style>
+            body { font-family: sans-serif; padding: 20px; }
+            .menu-item { 
+                display: inline-block; 
+                padding: 15px 30px; 
+                margin: 10px; 
+                background-color: #007bff; 
+                color: white; 
+                text-decoration: none; 
+                border-radius: 5px; 
+            }
+            .menu-item:hover { background-color: #0056b3; }
+        </style>
     </head>
     <body>
-        <h1>Cadastro de Usuário</h1>
-        <form action="cadastrar-usuario" method="POST">
-            <label>Nome:</label>
-            <input type="text" name="nome" required><br><br>
-            
-            <label>E-mail:</label>
-            <input type="email" name="email" required><br><br>
-            
-            <label>Senha:</label>
-            <input type="password" name="senha" required><br><br>
-            
-            <button type="submit">Cadastrar</button>
-        </form>
+        <h1>Sistema de Biblioteca</h1>
+        <hr>
+        
+        <h3>Usuários</h3>
+        <a href="cadastro-usuario.html" class="menu-item">Novo Usuário</a> 
+        <a href="listar-usuarios" class="menu-item">Listar Usuários</a>
+        
+        <hr>
+
+        <h3>Livros</h3>
+        <a href="cadastro-livro.html" class="menu-item">Cadastrar Novo Livro</a>
+        <a href="listar-livros" class="menu-item">Listar Livros</a>
+
     </body>
 </html>

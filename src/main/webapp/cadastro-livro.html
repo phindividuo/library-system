@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Novo Livro</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            form { max-width: 500px; }
+            label { display: block; margin-top: 15px; font-weight: bold; }
+            input, select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+            button { margin-top: 20px; padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; font-size: 16px; }
+            button:hover { background-color: #218838; }
+            .back-link { display: block; margin-bottom: 20px; text-decoration: none; color: #007bff; }
+        </style>
+    </head>
+    <body>
+        <a href="index.html" class="back-link">← Voltar ao Menu</a>
+        
+        <h1>Cadastro de Livro</h1>
+        
+        <form action="cadastrar-livro" method="POST">
+            
+            <label>ISBN:</label>
+            <input type="text" name="isbn" required placeholder="Ex: 978-3-16-148410-0">
+
+            <label>Título:</label>
+            <input type="text" name="titulo" required>
+
+            <label>Autor:</label>
+            <input type="text" name="autor" required>
+
+            <label>Editora:</label>
+            <input type="text" name="editora">
+
+            <label>Gênero:</label>
+            <select name="genero" required>
+                <option value="" disabled selected>Selecione um gênero...</option>
+                
+                <optgroup label="Ficção Literária e Clássicos">
+                    <option value="Clássicos">Clássicos da Literatura</option>
+                    <option value="Ficção Contemporânea">Ficção Contemporânea</option>
+                    <option value="Poesia">Poesia</option>
+                    <option value="Teatro">Teatro / Dramaturgia</option>
+                    <option value="Contos">Contos e Crônicas</option>
+                </optgroup>
+
+                <optgroup label="Fantasia e Sci-Fi">
+                    <option value="Alta Fantasia">Alta Fantasia (High Fantasy)</option>
+                    <option value="Fantasia Urbana">Fantasia Urbana</option>
+                    <option value="Realismo Mágico">Realismo Mágico</option>
+                    <option value="Ficção Científica">Ficção Científica (Sci-Fi)</option>
+                    <option value="Cyberpunk">Cyberpunk / Steampunk</option>
+                    <option value="Distopia">Distopia / Pós-Apocalíptico</option>
+                    <option value="Space Opera">Space Opera</option>
+                </optgroup>
+
+                <optgroup label="Suspense">
+                    <option value="Policial">Policial / Detetive</option>
+                    <option value="Thriller">Thriller</option>
+                    <option value="Mistério">Mistério</option>
+                    <option value="Terror">Terror / Horror</option>
+                </optgroup>
+
+                <optgroup label="Romance">
+                    <option value="Romance Contemporâneo">Romance Contemporâneo</option>
+                    <option value="Romance de Época">Romance de Época</option>
+                    <option value="Comédia Romântica">Comédia Romântica</option>
+                    <option value="Romance Dark">Romance Erótico / Dark Romance</option>
+                    <option value="Romance LGBTQIA+">Romance LGBTQIA+</option>
+                </optgroup>
+
+                <optgroup label="Outros de Ficção">
+                    <option value="Ficção Histórica">Ficção Histórica</option>
+                    <option value="Aventura">Aventura / Ação</option>
+                    <option value="Humor">Humor / Sátira</option>
+                    <option value="Ficção Religiosa">Ficção Cristã / Religiosa</option>
+                </optgroup>
+
+                <optgroup label="Biografia e Autoajuda">
+                    <option value="Biografia">Biografia / Autobiografia</option>
+                    <option value="Memórias">Diários / Memórias</option>
+                    <option value="Autoajuda">Autoajuda / Desenvolvimento Pessoal</option>
+                    <option value="Produtividade">Produtividade e Gestão</option>
+                    <option value="Relacionamentos">Relacionamentos</option>
+                    <option value="Espiritualidade">Espiritualidade</option>
+                </optgroup>
+
+                <optgroup label="Negócios">
+                    <option value="Administração">Administração e Liderança</option>
+                    <option value="Economia">Economia</option>
+                    <option value="Finanças">Finanças Pessoais / Investimentos</option>
+                    <option value="Marketing">Marketing e Vendas</option>
+                    <option value="Empreendedorismo">Empreendedorismo</option>
+                </optgroup>
+
+                <optgroup label="Sociedade e História">
+                    <option value="História Geral">História Geral</option>
+                    <option value="História Brasil">História do Brasil</option>
+                    <option value="Política">Política</option>
+                    <option value="Sociologia">Sociologia e Antropologia</option>
+                    <option value="Filosofia">Filosofia</option>
+                    <option value="True Crime">True Crime</option>
+                    <option value="Direito">Direito</option>
+                </optgroup>
+
+                <optgroup label="Ciência e Saúde">
+                    <option value="Ciência">Divulgação Científica</option>
+                    <option value="Tecnologia">Tecnologia da Informação</option>
+                    <option value="Medicina">Medicina e Saúde</option>
+                    <option value="Psicologia">Psicologia</option>
+                </optgroup>
+
+                <optgroup label="Estilo de Vida e Artes">
+                    <option value="Gastronomia">Culinária e Gastronomia</option>
+                    <option value="Viagem">Viagem e Turismo</option>
+                    <option value="Esportes">Esportes</option>
+                    <option value="Artes">Artes</option>
+                    <option value="Moda">Moda e Beleza</option>
+                    <option value="Música">Música</option>
+                    <option value="Cinema">Cinema</option>
+                </optgroup>
+
+                <optgroup label="Religião">
+                    <option value="Teologia">Teologia</option>
+                    <option value="Esoterismo">Esoterismo</option>
+                    <option value="Religiões">Religiões</option>
+                </optgroup>
+
+                <optgroup label="Infantil e Jovem Adulto">
+                    <option value="Infantil">Infantil (0-8 anos)</option>
+                    <option value="Infantojuvenil">Infantojuvenil (8-12 anos)</option>
+                    <option value="Jovem Adulto">Jovem Adulto (YA)</option>
+                </optgroup>
+
+                <optgroup label="Formatos e Referência">
+                    <option value="Mangá">Mangás</option>
+                    <option value="Quadrinhos">HQs / Comics</option>
+                    <option value="Graphic Novel">Graphic Novels</option>
+                    <option value="Didático">Livros Didáticos / Escolares</option>
+                    <option value="Dicionário">Dicionários / Enciclopédias</option>
+                </optgroup>
+            </select>
+
+            <label>Número de Páginas:</label>
+            <input type="number" name="numPaginas">
+
+            <label>Ano de Publicação:</label>
+            <input type="number" name="anoPublicacao" min="1500" max="2099">
+
+            <label>Classificação (0 a 10):</label>
+            <input type="number" name="classificacao" min="0" max="10" placeholder="Nota de avaliação">
+
+            <label>Quantidade em Estoque:</label>
+            <input type="number" name="quantidade" required min="1" value="1">
+
+            <br><br>
+            <button type="submit">Salvar Livro</button>
+        </form>
+    </body>
+</html>

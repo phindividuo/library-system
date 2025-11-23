@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Novo Usuário</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            form { max-width: 400px; }
+            label { display: block; margin-top: 15px; font-weight: bold; }
+            input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+            button { margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; }
+            button:hover { background-color: #0056b3; }
+            .back-link { display: block; margin-bottom: 20px; text-decoration: none; color: #666; }
+        </style>
+    </head>
+    <body>
+        <a href="index.html" class="back-link">← Voltar ao Menu</a>
+        
+        <h1>Cadastro de Usuário</h1>
+        
+        <!-- Servlet UsuarioServlet -->
+        <form action="cadastrar-usuario" method="POST">
+            <label>Nome:</label>
+            <input type="text" name="nome" required>
+            
+            <label>E-mail:</label>
+            <input type="email" name="email" required>
+            
+            <label>Senha:</label>
+            <input type="password" name="senha" required>
+            
+            <button type="submit">Cadastrar</button>
+        </form>
+    </body>
+</html>
