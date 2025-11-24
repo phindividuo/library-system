@@ -26,6 +26,11 @@ public class UsuarioServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // Garantir que vem do form é UTF-8
+        request.setCharacterEncoding("UTF-8");
+        // Garantir o que vai para a tela é UTF
+        response.setCharacterEncoding("UTF-8");
+        
         // Recebe os dados do formulário HTML
         String nome = request.getParameter("nome");
         String email = request.getParameter("email");

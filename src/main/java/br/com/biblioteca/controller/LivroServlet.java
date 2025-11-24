@@ -26,6 +26,11 @@ public class LivroServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // Garantir que vem do form é UTF-8
+        request.setCharacterEncoding("UTF-8");
+        // Garantir o que vai para a tela é UTF
+        response.setCharacterEncoding("UTF-8");
+        
         // Recebe dados (texto) do formulário
         String isbn = request.getParameter("isbn");
         String titulo = request.getParameter("titulo");

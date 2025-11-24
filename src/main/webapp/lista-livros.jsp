@@ -1,5 +1,4 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!-- Importante: Biblioteca JSTL para fazer o loop -->
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>

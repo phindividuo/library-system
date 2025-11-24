@@ -69,4 +69,46 @@ public class LivroDAO {
         }
         return lista;
     }
+    
+    // Buscar um livro específico pelo ID
+    public Livro buscarPorId(int id) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT * FROM livros WHERE id = ?";
+        Livro l = null;
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                l = new Livro();
+                l.setId(rs.getInt("id"));
+                l.setIsbn(rs.getString("isbn"));
+                l.setTitulo(rs.getString("titulo"));
+                l.setAutor(rs.getString("autor"));
+                l.setEditora(rs.getString("editora"));
+                l.setGenero(rs.getString("genero"));
+                l.setNumPaginas(rs.getInt("num_paginas"));
+                l.setAnoPublicacao(rs.getInt("ano_publicacao"));
+                l.setClassificacao(rs.getInt("classificacao"));
+                l.setQuantidade(rs.getInt("quantidade"));
+            }
+        }
+        return l;
+    }
+
+    // Aumentar o estoque
+    public void adicionarEstoque(int idLivro, int quantidadeAdicional) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE livros SET quantidade = quantidade + ? WHERE id = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, quantidadeAdicional);
+            stmt.setInt(2, idLivro);
+            
+            stmt.executeUpdate();
+        }
+    }
 }
