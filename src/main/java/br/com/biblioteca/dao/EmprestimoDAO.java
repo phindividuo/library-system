@@ -15,6 +15,7 @@ import br.com.biblioteca.model.Livro;
 import br.com.biblioteca.model.Usuario;
 import br.com.biblioteca.util.ConnectionFactory;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +25,10 @@ import java.util.List;
 
 public class EmprestimoDAO {
 
+    // REGISTRAR (Admin ou Leitor faz empréstimo)
     public void registrarEmprestimo(Emprestimo emprestimo) throws SQLException, ClassNotFoundException {
-        String sqlInsert = "INSERT INTO emprestimos (usuario_id, livro_id, data_emprestimo, data_devolucao_prevista, status) VALUES (?, ?, ?, ?, ?)";
+        // Agora incluímos 'foi_renovado' com padrão false (ou deixamos o banco cuidar disso com DEFAULT)
+        String sqlInsert = "INSERT INTO emprestimos (usuario_id, livro_id, data_emprestimo, data_devolucao_prevista, status, foi_renovado) VALUES (?, ?, ?, ?, ?, FALSE)";
         String sqlUpdateLivro = "UPDATE livros SET quantidade = quantidade - 1 WHERE id = ?";
 
         Connection conn = null;
@@ -34,9 +37,9 @@ public class EmprestimoDAO {
             conn = ConnectionFactory.getConnection();
             
             // Início da Transação
-            conn.setAutoCommit(false); // Desliga o salvamento automático
+            conn.setAutoCommit(false); 
 
-            // Registra o empréstimo
+            // 1. Inserir o Empréstimo
             try (PreparedStatement stmt1 = conn.prepareStatement(sqlInsert)) {
                 stmt1.setInt(1, emprestimo.getUsuario().getId());
                 stmt1.setInt(2, emprestimo.getLivro().getId());
@@ -46,80 +49,159 @@ public class EmprestimoDAO {
                 stmt1.executeUpdate();
             }
 
-            // Diminui o estoque do livro (-1)
+            // 2. Diminuir Estoque
             try (PreparedStatement stmt2 = conn.prepareStatement(sqlUpdateLivro)) {
                 stmt2.setInt(1, emprestimo.getLivro().getId());
                 stmt2.executeUpdate();
             }
 
-            // Se funcionar, commita no BD
-            conn.commit();
-            // Fim da Transação
+            conn.commit(); // Confirma
 
         } catch (Exception e) {
-            // Se deu erro, desfaz tudo feito com o rollback
             if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             }
             throw new SQLException("Erro ao realizar empréstimo", e);
         } finally {
             if (conn != null) {
-                conn.setAutoCommit(true); // Volta ao normal
+                conn.setAutoCommit(true);
                 conn.close();
             }
         }
     }
 
-    public List<Emprestimo> listar() throws SQLException, ClassNotFoundException {
-        List<Emprestimo> lista = new ArrayList<>();
+    // RENOVAR (Apenas Leitor)
+    public boolean renovar(int idEmprestimo) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
         
-        // SQL com JOIN para trazer o Nome do Usuário e o Título do Livro
-        String sql = "SELECT e.*, u.nome as usuario_nome, u.email as usuario_email, l.titulo as livro_titulo " +
-                     "FROM emprestimos e " +
-                     "JOIN usuarios u ON e.usuario_id = u.id " +
-                     "JOIN livros l ON e.livro_id = l.id " +
-                     "ORDER BY e.data_emprestimo DESC";
+        try {
+            conn = ConnectionFactory.getConnection();
+            
+            // PASSO 1: Verifica se pode renovar e pega a data atual
+            String sqlSelect = "SELECT data_devolucao_prevista FROM emprestimos WHERE id = ? AND foi_renovado = FALSE AND status = 'ATIVO'";
+            
+            LocalDate dataAtual = null;
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sqlSelect)) {
+                stmt.setInt(1, idEmprestimo);
+                ResultSet rs = stmt.executeQuery();
+                
+                if (rs.next()) {
+                    Date d = rs.getDate("data_devolucao_prevista");
+                    if (d != null) {
+                        dataAtual = d.toLocalDate();
+                    }
+                }
+            }
+            
+            // Se não achou data (ou seja, empréstimo não existe, já foi renovado ou não está ativo)
+            if (dataAtual == null) {
+                return false;
+            }
+
+            // PASSO 2: Calcula a nova data no Java (+7 dias)
+            LocalDate novaData = dataAtual.plusDays(7);
+
+            // PASSO 3: Atualiza no banco
+            String sqlUpdate = "UPDATE emprestimos SET data_devolucao_prevista = ?, foi_renovado = TRUE WHERE id = ?";
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
+                stmt.setDate(1, Date.valueOf(novaData)); // Converte LocalDate para SQL Date
+                stmt.setInt(2, idEmprestimo);
+                
+                int linhas = stmt.executeUpdate();
+                return linhas > 0;
+            }
+            
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
+
+    // LISTAR TODOS (Para o Admin) - Renomeado de 'listarTodos' para 'listar' para compatibilidade
+    public List<Emprestimo> listar() throws SQLException, ClassNotFoundException {
+        return listarGenerico("SELECT e.*, u.nome as u_nome, u.email as u_email, l.titulo as l_titulo, l.autor as l_autor FROM emprestimos e JOIN usuarios u ON e.usuario_id = u.id JOIN livros l ON e.livro_id = l.id ORDER BY e.data_emprestimo DESC", null);
+    }
+
+    // LISTAR POR USUÁRIO (Para o Leitor - "Meus Empréstimos")
+    public List<Emprestimo> listarPorUsuario(int idUsuario) throws SQLException, ClassNotFoundException {
+        return listarGenerico("SELECT e.*, u.nome as u_nome, u.email as u_email, l.titulo as l_titulo, l.autor as l_autor FROM emprestimos e JOIN usuarios u ON e.usuario_id = u.id JOIN livros l ON e.livro_id = l.id WHERE e.usuario_id = ? ORDER BY e.data_emprestimo DESC", idUsuario);
+    }
+
+    // Método auxiliar privado para evitar repetição de código no listar
+    private List<Emprestimo> listarGenerico(String sql, Integer idFiltro) throws SQLException, ClassNotFoundException {
+        List<Emprestimo> lista = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            if (idFiltro != null) {
+                stmt.setInt(1, idFiltro);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Emprestimo emp = new Emprestimo();
                 emp.setId(rs.getInt("id"));
-                
-                // Convertendo datas do Banco (java.sql.Date) para Java (LocalDate)
                 emp.setDataEmprestimo(rs.getDate("data_emprestimo").toLocalDate());
                 emp.setDataDevolucaoPrevista(rs.getDate("data_devolucao_prevista").toLocalDate());
                 
-                // Tratamento para Data de Devolução Real (pode ser nula se ainda não devolveu)
                 Date dataReal = rs.getDate("data_devolucao_real");
-                if (dataReal != null) {
-                    emp.setDataDevolucaoReal(dataReal.toLocalDate());
-                }
+                if (dataReal != null) emp.setDataDevolucaoReal(dataReal.toLocalDate());
                 
                 emp.setStatus(rs.getString("status"));
+                // O campo 'foi_renovado' no banco é boolean, mas o JDBC mapeia como boolean
+                // Precisaríamos adicionar esse campo no Modelo Emprestimo se quisermos mostrar na tela (sugiro fazer depois)
 
-                // Preenchendo Usuário (parcialmente, só com o que veio no JOIN)
+                // Usuario Parcial
                 Usuario u = new Usuario();
                 u.setId(rs.getInt("usuario_id"));
-                u.setNome(rs.getString("usuario_nome"));
-                u.setEmail(rs.getString("usuario_email"));
+                u.setNome(rs.getString("u_nome"));
+                u.setEmail(rs.getString("u_email"));
                 emp.setUsuario(u);
 
-                // Preenchendo Livro Parcialmente
+                // Livro Parcial
                 Livro l = new Livro();
                 l.setId(rs.getInt("livro_id"));
-                l.setTitulo(rs.getString("livro_titulo"));
+                l.setTitulo(rs.getString("l_titulo"));
+                l.setAutor(rs.getString("l_autor"));
                 emp.setLivro(l);
 
                 lista.add(emp);
             }
         }
         return lista;
+    }
+    
+    // CONTA QUANTOS EMPRÉSTIMOS ATIVOS O USUÁRIO TEM
+    public int contarEmprestimosAtivos(int idUsuario) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT COUNT(*) FROM emprestimos WHERE usuario_id = ? AND status = 'ATIVO'";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUsuario);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    // VERIFICA SE O USUÁRIO JÁ TEM ESSE LIVRO ATIVO
+    public boolean jaPossuiLivro(int idUsuario, int idLivro) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT COUNT(*) FROM emprestimos WHERE usuario_id = ? AND livro_id = ? AND status = 'ATIVO'";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUsuario);
+            stmt.setInt(2, idLivro);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
     }
 }

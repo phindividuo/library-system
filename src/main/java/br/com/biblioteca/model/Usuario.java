@@ -9,12 +9,15 @@
  */
 
 package br.com.biblioteca.model;
+import java.time.LocalDate;
 
 public class Usuario {
     private int id;
     private String nome;
     private String email;
     private String senha;
+    private String perfil; // 'ADMIN' ou 'LEITOR'
+    private LocalDate dataDesbloqueio; // Para penalidades
 
     // Construtor vazio (obrigatório para o JavaBeans)
     public Usuario() {}
@@ -28,4 +31,8 @@ public class Usuario {
     public void setEmail(String email) { this.email = email; }
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
+    public String getPerfil() { return perfil; }
+    public void setPerfil(String perfil) { this.perfil = perfil; }
+    public LocalDate getDataDesbloqueio() { return dataDesbloqueio; }
+    public void setDataDesbloqueio(LocalDate dataDesbloqueio) { this.dataDesbloqueio = dataDesbloqueio; }
 }

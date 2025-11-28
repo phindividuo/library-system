@@ -12,7 +12,7 @@
     <body>
         <h1>Usuários Cadastrados</h1>
         
-        <a href="index.html">+ Novo Usuário</a>
+        <a href="dashboard">+ Novo Usuário</a>
         <br><br>
 
         <table>

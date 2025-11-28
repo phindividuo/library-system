@@ -15,7 +15,7 @@
         </style>
     </head>
     <body>
-        <a href="index.html">← Voltar ao Menu</a>
+        <a href="dashboard">← Voltar ao Menu</a>
         <h1>Reposição de Estoque</h1>
         <p>Escolha um livro para adicionar unidades:</p>
 

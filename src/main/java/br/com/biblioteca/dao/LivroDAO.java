@@ -21,9 +21,9 @@ import java.util.List;
 
 public class LivroDAO {
 
-    // ADICIONAR LIVRO
+    // ADICIONAR (Agora inclui nota_media com valor padrão 0)
     public void adicionar(Livro livro) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO livros (isbn, titulo, autor, editora, genero, num_paginas, ano_publicacao, classificacao, quantidade) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO livros (isbn, titulo, autor, editora, genero, num_paginas, ano_publicacao, classificacao, quantidade, nota_media) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -37,12 +37,13 @@ public class LivroDAO {
             stmt.setInt(7, livro.getAnoPublicacao());
             stmt.setInt(8, livro.getClassificacao());
             stmt.setInt(9, livro.getQuantidade());
+            stmt.setDouble(10, 0.0); // Livro novo começa com média 0.0
 
             stmt.execute();
         }
     }
 
-    // LISTAR LIVROS
+    // LISTAR TODOS
     public List<Livro> listar() throws SQLException, ClassNotFoundException {
         List<Livro> lista = new ArrayList<>();
         String sql = "SELECT * FROM livros";
@@ -52,28 +53,16 @@ public class LivroDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Livro l = new Livro();
-                l.setId(rs.getInt("id"));
-                l.setIsbn(rs.getString("isbn"));
-                l.setTitulo(rs.getString("titulo"));
-                l.setAutor(rs.getString("autor"));
-                l.setEditora(rs.getString("editora"));
-                l.setGenero(rs.getString("genero"));
-                l.setNumPaginas(rs.getInt("num_paginas"));
-                l.setAnoPublicacao(rs.getInt("ano_publicacao"));
-                l.setClassificacao(rs.getInt("classificacao"));
-                l.setQuantidade(rs.getInt("quantidade"));
-                
-                lista.add(l);
+                lista.add(montarLivro(rs));
             }
         }
         return lista;
     }
     
-    // Buscar um livro específico pelo ID
+    // BUSCAR POR ID
     public Livro buscarPorId(int id) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM livros WHERE id = ?";
-        Livro l = null;
+        Livro livro = null;
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -82,23 +71,13 @@ public class LivroDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                l = new Livro();
-                l.setId(rs.getInt("id"));
-                l.setIsbn(rs.getString("isbn"));
-                l.setTitulo(rs.getString("titulo"));
-                l.setAutor(rs.getString("autor"));
-                l.setEditora(rs.getString("editora"));
-                l.setGenero(rs.getString("genero"));
-                l.setNumPaginas(rs.getInt("num_paginas"));
-                l.setAnoPublicacao(rs.getInt("ano_publicacao"));
-                l.setClassificacao(rs.getInt("classificacao"));
-                l.setQuantidade(rs.getInt("quantidade"));
+                livro = montarLivro(rs);
             }
         }
-        return l;
+        return livro;
     }
 
-    // Aumentar o estoque
+    // ADICIONAR ESTOQUE
     public void adicionarEstoque(int idLivro, int quantidadeAdicional) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE livros SET quantidade = quantidade + ? WHERE id = ?";
         
@@ -107,8 +86,24 @@ public class LivroDAO {
             
             stmt.setInt(1, quantidadeAdicional);
             stmt.setInt(2, idLivro);
-            
             stmt.executeUpdate();
         }
+    }
+
+    // Método auxiliar para evitar repetição de código
+    private Livro montarLivro(ResultSet rs) throws SQLException {
+        Livro l = new Livro();
+        l.setId(rs.getInt("id"));
+        l.setIsbn(rs.getString("isbn"));
+        l.setTitulo(rs.getString("titulo"));
+        l.setAutor(rs.getString("autor"));
+        l.setEditora(rs.getString("editora"));
+        l.setGenero(rs.getString("genero"));
+        l.setNumPaginas(rs.getInt("num_paginas"));
+        l.setAnoPublicacao(rs.getInt("ano_publicacao"));
+        l.setClassificacao(rs.getInt("classificacao"));
+        l.setQuantidade(rs.getInt("quantidade"));
+        l.setNotaMedia(rs.getDouble("nota_media")); 
+        return l;
     }
 }

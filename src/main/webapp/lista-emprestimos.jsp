@@ -16,7 +16,7 @@
         </style>
     </head>
     <body>
-        <a href="index.html" class="back-link">← Voltar ao Menu</a>
+        <a href="dashboard" class="back-link">← Voltar ao Menu</a>
         <h1>Controle de Empréstimos</h1>
         
         <a href="novo-emprestimo" style="background-color: #007bff; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">Novo Empréstimo</a>
