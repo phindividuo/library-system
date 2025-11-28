@@ -47,7 +47,7 @@ public class AdicionarEstoqueServlet extends HttpServlet {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             int qtdAdicional = Integer.parseInt(request.getParameter("novaQuantidade"));
-            String titulo = request.getParameter("titulo"); // Só para mensagem
+            String titulo = request.getParameter("titulo"); 
 
             LivroDAO dao = new LivroDAO();
             dao.adicionarEstoque(id, qtdAdicional);

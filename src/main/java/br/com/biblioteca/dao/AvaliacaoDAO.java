@@ -21,7 +21,7 @@ public class AvaliacaoDAO {
             conn = ConnectionFactory.getConnection();
             conn.setAutoCommit(false); // Início da Transação
 
-            // 1. Verifica se já existe avaliação desse usuário para esse livro
+            // Verifica se já existe avaliação desse usuário para esse livro
             String sqlCheck = "SELECT id FROM avaliacoes WHERE usuario_id = ? AND livro_id = ?";
             boolean existe = false;
             try (PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
@@ -32,7 +32,7 @@ public class AvaliacaoDAO {
                 }
             }
 
-            // 2. Insere ou Atualiza a Avaliação
+            // Insere ou Atualiza a Avaliação
             String sqlAcao;
             if (existe) {
                 // Atualiza a nota existente
@@ -50,8 +50,8 @@ public class AvaliacaoDAO {
                 stmtAcao.executeUpdate();
             }
 
-            // 3. Recalcula a Média do Livro (Agora forçando DOUBLE para precisão)
-            // COALESCE(..., 0.0) garante que se não houver notas (improvável aqui), retorne 0.0
+            // Recalcula a Média do Livro 
+            // COALESCE(..., 0.0) garante que se não houver notas, retorne 0.0
             String sqlMedia = "SELECT COALESCE(AVG(CAST(nota AS DOUBLE)), 0.0) FROM avaliacoes WHERE livro_id = ?";
             double novaMedia = 0.0;
             try (PreparedStatement stmtMedia = conn.prepareStatement(sqlMedia)) {
@@ -62,7 +62,7 @@ public class AvaliacaoDAO {
                 }
             }
 
-            // 4. Atualiza a tabela Livros com a nova média calculada
+            // Atualiza a tabela Livros com a nova média calculada
             String sqlUpdateLivro = "UPDATE livros SET nota_media = ? WHERE id = ?";
             try (PreparedStatement stmtLivro = conn.prepareStatement(sqlUpdateLivro)) {
                 stmtLivro.setDouble(1, novaMedia);
@@ -70,7 +70,7 @@ public class AvaliacaoDAO {
                 stmtLivro.executeUpdate();
             }
 
-            conn.commit(); // Confirma tudo
+            conn.commit(); // Commita
 
         } catch (Exception e) {
             if (conn != null) {

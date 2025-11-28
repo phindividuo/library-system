@@ -30,11 +30,11 @@ public class UsuarioDAO {
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            // Substitui os '?' pelos dados do objeto
+            // Substitui os placeholders
             stmt.setString(1, usuario.getNome());
             stmt.setString(2, usuario.getEmail());
             stmt.setString(3, usuario.getSenha());
-            stmt.setString(4, "LEITOR"); // Todo cadastro público é LEITOR por segurança
+            stmt.setString(4, "LEITOR"); // Todo cadastro público é LEITOR
 
             // Executa
             stmt.execute();
@@ -89,7 +89,7 @@ public class UsuarioDAO {
         return lista;
     }
     
-    // Bloqueia o usuário até uma data específica
+    // Bloqueia o usuário até a data estipulada (caso de penalidades)
     public void bloquearUsuario(int idUsuario, java.time.LocalDate dataDesbloqueio) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE usuarios SET data_desbloqueio = ? WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();

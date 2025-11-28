@@ -26,7 +26,7 @@
 <body>
     <div class="container" style="max-width: 600px;">
         
-        <!-- CORREÇÃO LAYOUT: Link fora do container branco para não sobrepor o header roxo -->
+        <!-- Link fora do container branco para não sobrepor o header -->
         <div class="top-nav-aval">
             <a href="meus-emprestimos" class="back-link">← Cancelar</a>
         </div>
@@ -38,7 +38,7 @@
                 <span style="font-size: 0.9rem; opacity: 0.9;">${empty livro ? param.autor : livro.autor}</span>
             </div>
 
-            <!-- CORREÇÃO ENCODING: Mensagens de erro/sucesso agora devem aparecer com acentos corretos -->
+            <!-- CORREÇÃO ENCODING -->
             <c:if test="${not empty param.msg}"><div class="msg msg-ok">${param.msg}</div></c:if>
 
             <form action="avaliar-livro" method="POST">

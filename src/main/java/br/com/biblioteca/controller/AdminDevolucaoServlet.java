@@ -66,23 +66,23 @@ public class AdminDevolucaoServlet extends HttpServlet {
         Emprestimo emp = empDao.buscarPorId(idEmprestimo);
         
         if (emp == null || !"ATIVO".equals(emp.getStatus())) {
-            // CORREÇÃO: Mensagem de erro codificada em UTF-8
+            // Mensagem de erro codificada em UTF-8
             String erroMsg = "Empréstimo inválido ou já finalizado";
             response.sendRedirect("admin-devolucoes?erro=" + URLEncoder.encode(erroMsg, StandardCharsets.UTF_8));
             return;
         }
 
-        // 1. Efetiva a devolução no banco (Data Real e Estoque)
+        // Efetiva a devolução no banco (Data Real e Estoque)
         empDao.registrarDevolucao(idEmprestimo, emp.getLivro().getId());
         
-        // 2. Verifica Atraso
+        // Verifica Atraso
         LocalDate hoje = LocalDate.now();
         String msg = "Entrega do livro registrada com sucesso!";
         
         if (hoje.isAfter(emp.getDataDevolucaoPrevista())) {
             // APLICA PENALIDADE
             long diasAtraso = ChronoUnit.DAYS.between(emp.getDataDevolucaoPrevista(), hoje);
-            int diasBloqueio = 90; // Regra fixa solicitada
+            int diasBloqueio = 90; // Regra fixa de 90 dias
             LocalDate dataDesbloqueio = hoje.plusDays(diasBloqueio);
             
             // Grava Histórico Penalidade
@@ -103,7 +103,7 @@ public class AdminDevolucaoServlet extends HttpServlet {
             msg = "ATENÇÃO: Atraso! Usuario bloqueado por 90 dias.";
         }
         
-        // CORREÇÃO: Mensagem de sucesso/alerta codificada em UTF-8
+        // Mensagem de sucesso/alerta codificada em UTF-8
         response.sendRedirect("admin-devolucoes?msg=" + URLEncoder.encode(msg, StandardCharsets.UTF_8));
     }
 }

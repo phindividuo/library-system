@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="container container-white">
-        <!-- Topo apenas com botão Voltar, sem o Novo Livro -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <a href="dashboard" class="back-link">← Voltar ao Painel</a>
         </div>
@@ -26,7 +25,7 @@
                     <th>Gênero</th>
                     <th>Nota</th>
                     <th style="text-align: center;">Estoque</th>
-                    <th>Ações</th> <!-- Cabeçalho necessário para a coluna de botões -->
+                    <th>Ações</th> <!-- Coluna de botões -->
                 </tr>
             </thead>
             <tbody>
@@ -51,8 +50,8 @@
                             ${l.quantidade}
                         </td>
                         <td>
-                            <!-- Lógica simplificada: Apenas Emprestar ou Esgotado -->
-                            <!-- Removemos a opção de 'Adicionar Estoque' do Admin aqui -->
+                            <!-- Apenas Emprestar ou Esgotado -->
+                            <!-- Removido a opção de Adicionar Estoque -->
                             <c:choose>
                                 <c:when test="${l.quantidade > 0}">
                                     <a href="novo-emprestimo?livroId=${l.id}" class="btn btn-sm">Emprestar</a>

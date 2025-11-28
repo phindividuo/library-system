@@ -43,7 +43,7 @@ public class UsuarioServlet extends HttpServlet {
         usuario.setSenha(senha);
 
         try {
-            // 3. Chama o DAO para salvar no banco
+            // Chama o DAO para salvar no banco
             UsuarioDAO dao = new UsuarioDAO();
             dao.adicionar(usuario);
 

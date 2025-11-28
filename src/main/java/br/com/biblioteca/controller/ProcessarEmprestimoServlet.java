@@ -37,7 +37,7 @@ public class ProcessarEmprestimoServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8"); // Garante que a entrada esteja correta
 
         try {
-            // --- 1. SEGURANÇA ---
+            // Segurança
             HttpSession session = request.getSession(false);
             Usuario usuarioLogado = (session != null) ? (Usuario) session.getAttribute("usuarioLogado") : null;
             
@@ -46,7 +46,7 @@ public class ProcessarEmprestimoServlet extends HttpServlet {
                 return;
             }
 
-            // --- 2. RECEBE DADOS ---
+            // Recebe Dados
             int idUsuarioAlvo = Integer.parseInt(request.getParameter("idUsuario"));
             int idLivro = Integer.parseInt(request.getParameter("idLivro"));
             int dias = Integer.parseInt(request.getParameter("dias"));
@@ -54,7 +54,7 @@ public class ProcessarEmprestimoServlet extends HttpServlet {
             LivroDAO livroDao = new LivroDAO();
             EmprestimoDAO emprestimoDao = new EmprestimoDAO();
 
-            // --- 3. VALIDAÇÕES DE REGRA DE NEGÓCIO ---
+            // Validações e Regras
 
             // Regra A: Estoque
             Livro livroBanco = livroDao.buscarPorId(idLivro);
@@ -85,7 +85,7 @@ public class ProcessarEmprestimoServlet extends HttpServlet {
                 }
             }
 
-            // --- 4. SUCESSO ---
+            // SUCESSO
             Usuario u = new Usuario();
             u.setId(idUsuarioAlvo);
 
@@ -111,14 +111,14 @@ public class ProcessarEmprestimoServlet extends HttpServlet {
         }
     }
 
-    // Método auxiliar REFORMULADO: Usa FORWARD em vez de Redirect para evitar erro de encoding
+    // Método auxiliar: Usa Forward em vez de Redirect para evitar erro de encoding
     // Precisamos recarregar as listas (livros/usuários) aqui porque o forward não volta para o NovoEmprestimoServlet
     private void enviarErro(HttpServletRequest request, HttpServletResponse response, String msg, int idLivro, Usuario usuarioLogado) throws ServletException, IOException {
         try {
-            // 1. Define a mensagem de erro no request (UTF-8 garantido)
+            // Define a mensagem de erro no request (UTF-8)
             request.setAttribute("mensagemErro", msg);
             
-            // 2. Recarrega as listas necessárias para o JSP (exatamente como no NovoEmprestimoServlet)
+            // Recarrega as listas necessárias para o JSP (exatamente como no NovoEmprestimoServlet)
             UsuarioDAO usuarioDao = new UsuarioDAO();
             List<Usuario> usuarios;
 
@@ -133,15 +133,15 @@ public class ProcessarEmprestimoServlet extends HttpServlet {
             LivroDAO livroDao = new LivroDAO();
             List<Livro> livros = livroDao.listar();
             
-            // Busca o livro alvo para manter travado
+            // Busca o livro alvo para manter cravado
             Livro livroAlvo = livroDao.buscarPorId(idLivro);
 
-            // 3. Configura atributos para o JSP
+            // Configura atributos para o JSP
             request.setAttribute("listaUsuarios", usuarios);
             request.setAttribute("listaLivros", livros);
             request.setAttribute("livroAlvo", livroAlvo);
 
-            // 4. Encaminha internamente (mantém URL limpa e dados seguros)
+            // Encaminha internamente (mantém URL limpa e dados seguros)
             request.getRequestDispatcher("novo-emprestimo.jsp").forward(request, response);
 
         } catch (Exception e) {

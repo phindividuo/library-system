@@ -27,7 +27,7 @@ public class EmprestimoDAO {
 
     // REGISTRAR (Admin ou Leitor faz empréstimo)
     public void registrarEmprestimo(Emprestimo emprestimo) throws SQLException, ClassNotFoundException {
-        // Agora incluímos 'foi_renovado' com padrão false (ou deixamos o banco cuidar disso com DEFAULT)
+        // Agora incluímos 'foi_renovado' com padrão false
         String sqlInsert = "INSERT INTO emprestimos (usuario_id, livro_id, data_emprestimo, data_devolucao_prevista, status, foi_renovado) VALUES (?, ?, ?, ?, ?, FALSE)";
         String sqlUpdateLivro = "UPDATE livros SET quantidade = quantidade - 1 WHERE id = ?";
 
@@ -39,7 +39,7 @@ public class EmprestimoDAO {
             // Início da Transação
             conn.setAutoCommit(false); 
 
-            // 1. Inserir o Empréstimo
+            // Inserir o Empréstimo
             try (PreparedStatement stmt1 = conn.prepareStatement(sqlInsert)) {
                 stmt1.setInt(1, emprestimo.getUsuario().getId());
                 stmt1.setInt(2, emprestimo.getLivro().getId());
@@ -49,13 +49,13 @@ public class EmprestimoDAO {
                 stmt1.executeUpdate();
             }
 
-            // 2. Diminuir Estoque
+            // Diminuir Estoque
             try (PreparedStatement stmt2 = conn.prepareStatement(sqlUpdateLivro)) {
                 stmt2.setInt(1, emprestimo.getLivro().getId());
                 stmt2.executeUpdate();
             }
 
-            conn.commit(); // Confirma
+            conn.commit(); // Commita
 
         } catch (Exception e) {
             if (conn != null) {
@@ -77,7 +77,7 @@ public class EmprestimoDAO {
         try {
             conn = ConnectionFactory.getConnection();
             
-            // PASSO 1: Verifica se pode renovar e pega a data atual
+            // Verifica se pode renovar e pega a data atual
             String sqlSelect = "SELECT data_devolucao_prevista FROM emprestimos WHERE id = ? AND foi_renovado = FALSE AND status = 'ATIVO'";
             
             LocalDate dataAtual = null;
@@ -94,15 +94,15 @@ public class EmprestimoDAO {
                 }
             }
             
-            // Se não achou data (ou seja, empréstimo não existe, já foi renovado ou não está ativo)
+            // Se não achou data (ou seja, empréstimo não existe, já foi renovado, não está ativo ou qualquer outro motivo)
             if (dataAtual == null) {
                 return false;
             }
 
-            // PASSO 2: Calcula a nova data no Java (+7 dias)
+            // Calcula a nova data no Java com o LOCALDATE (+7 dias)
             LocalDate novaData = dataAtual.plusDays(7);
 
-            // PASSO 3: Atualiza no banco
+            // Atualiza no banco
             String sqlUpdate = "UPDATE emprestimos SET data_devolucao_prevista = ?, foi_renovado = TRUE WHERE id = ?";
             
             try (PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
@@ -120,12 +120,12 @@ public class EmprestimoDAO {
         }
     }
 
-    // LISTAR TODOS (Para o Admin) - Renomeado de 'listarTodos' para 'listar' para compatibilidade
+    // LISTAR TODOS (Para o Admin)
     public List<Emprestimo> listar() throws SQLException, ClassNotFoundException {
         return listarGenerico("SELECT e.*, u.nome as u_nome, u.email as u_email, l.titulo as l_titulo, l.autor as l_autor FROM emprestimos e JOIN usuarios u ON e.usuario_id = u.id JOIN livros l ON e.livro_id = l.id ORDER BY e.data_emprestimo DESC", null);
     }
 
-    // LISTAR POR USUÁRIO (Para o Leitor - "Meus Empréstimos")
+    // LISTAR POR USUÁRIO (Para o Leitor "Meus Empréstimos")
     public List<Emprestimo> listarPorUsuario(int idUsuario) throws SQLException, ClassNotFoundException {
         return listarGenerico("SELECT e.*, u.nome as u_nome, u.email as u_email, l.titulo as l_titulo, l.autor as l_autor FROM emprestimos e JOIN usuarios u ON e.usuario_id = u.id JOIN livros l ON e.livro_id = l.id WHERE e.usuario_id = ? ORDER BY e.data_emprestimo DESC", idUsuario);
     }
@@ -153,8 +153,8 @@ public class EmprestimoDAO {
                 if (dataReal != null) emp.setDataDevolucaoReal(dataReal.toLocalDate());
                 
                 emp.setStatus(rs.getString("status"));
-                // O campo 'foi_renovado' no banco é boolean, mas o JDBC mapeia como boolean
-                // Precisaríamos adicionar esse campo no Modelo Emprestimo se quisermos mostrar na tela (sugiro fazer depois)
+                // O campo 'foi_renovado' no banco é booleano
+                // Precisaríamos adicionar esse campo no Modelo Emprestimo se quisermos mostrar na tela (não será mais feito)
 
                 // Usuario Parcial
                 Usuario u = new Usuario();
@@ -212,7 +212,7 @@ public class EmprestimoDAO {
         return lista.isEmpty() ? null : lista.get(0);
     }
 
-    // Registrar Devolução (Transacional: Fecha empréstimo e repõe estoque)
+    // Registrar Devolução (Fecha empréstimo e repõe estoque)
     public void registrarDevolucao(int idEmprestimo, int idLivro) throws SQLException, ClassNotFoundException {
         String sqlUpdateEmprestimo = "UPDATE emprestimos SET data_devolucao_real = ?, status = 'FINALIZADO' WHERE id = ?";
         String sqlUpdateLivro = "UPDATE livros SET quantidade = quantidade + 1 WHERE id = ?";
@@ -222,14 +222,14 @@ public class EmprestimoDAO {
             conn = ConnectionFactory.getConnection();
             conn.setAutoCommit(false); // Transação
 
-            // 1. Atualiza Empréstimo (Data de hoje e Status)
+            // Atualiza Empréstimo (Data de hoje e Status)
             try (PreparedStatement stmt1 = conn.prepareStatement(sqlUpdateEmprestimo)) {
                 stmt1.setDate(1, Date.valueOf(java.time.LocalDate.now())); // Hoje
                 stmt1.setInt(2, idEmprestimo);
                 stmt1.executeUpdate();
             }
 
-            // 2. Repõe Estoque do Livro (+1)
+            // Repõe Estoque do Livro (+1)
             try (PreparedStatement stmt2 = conn.prepareStatement(sqlUpdateLivro)) {
                 stmt2.setInt(1, idLivro);
                 stmt2.executeUpdate();

@@ -21,7 +21,7 @@ import java.util.List;
 
 public class LivroDAO {
 
-    // ADICIONAR (Agora inclui nota_media com valor padrão 0)
+    // ADICIONAR (Incluindo nota_media com valor padrão 0)
     public void adicionar(Livro livro) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO livros (isbn, titulo, autor, editora, genero, num_paginas, ano_publicacao, classificacao, quantidade, nota_media) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

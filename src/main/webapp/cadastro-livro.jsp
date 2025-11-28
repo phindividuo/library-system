@@ -9,7 +9,7 @@
     <style>
         .row { display: flex; gap: 15px; }
         .col { flex: 1; }
-        /* Pequeno ajuste para garantir que inputs number não tenham setas em alguns browsers se desejar, mas padrão ajuda */
+        /* Pequeno ajuste para garantir que inputs number não tenham setas em alguns browsers (deu erro no Firefox Matheus) */
     </style>
 </head>
 <body>

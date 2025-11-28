@@ -12,7 +12,7 @@
         <div class="card-icon" style="color: var(--success);">✅</div>
         <h1 class="text-green">Sucesso!</h1>
         
-        <!-- O request.setCharacterEncoding acima ajuda a decodificar corretamente este parametro -->
+        <!-- O request.setCharacterEncoding no início para tentar resolver os erros de encoding -->
         <h3 style="font-weight: normal; color: #555;">${param.mensagem}</h3>
         
         <br>

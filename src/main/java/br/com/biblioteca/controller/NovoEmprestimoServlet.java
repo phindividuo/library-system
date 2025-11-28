@@ -32,7 +32,7 @@ public class NovoEmprestimoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // 1. Recupera a Sessão e o Usuário Logado
+        // Recupera a Sessão e o Usuário Logado
         HttpSession session = request.getSession(false);
         Usuario usuarioLogado = (session != null) ? (Usuario) session.getAttribute("usuarioLogado") : null;
 
@@ -46,7 +46,7 @@ public class NovoEmprestimoServlet extends HttpServlet {
             UsuarioDAO usuarioDao = new UsuarioDAO();
             List<Usuario> usuariosParaEmprestimo;
 
-            // 2. Define lista de usuários (Se for LEITOR, só vê a si mesmo)
+            // Define lista de usuários (Se for LEITOR, só vê a si mesmo)
             if ("ADMIN".equals(usuarioLogado.getPerfil())) {
                 usuariosParaEmprestimo = usuarioDao.listar();
                 // Remove o próprio admin da lista (opcional, regra de negócio)
@@ -65,7 +65,7 @@ public class NovoEmprestimoServlet extends HttpServlet {
             LivroDAO livroDao = new LivroDAO();
             List<Livro> livros = livroDao.listar();
 
-            // 3. Lógica de Pré-Seleção (FIXAR O LIVRO)
+            // Lógica de Pré-Seleção (FIXAR O LIVRO)
             String livroIdParam = request.getParameter("livroId");
             Livro livroAlvo = null;
 
@@ -78,10 +78,10 @@ public class NovoEmprestimoServlet extends HttpServlet {
                 }
             }
 
-            // 4. Envia tudo para o JSP
+            // Envia tudo para o JSP
             request.setAttribute("listaUsuarios", usuariosParaEmprestimo);
             request.setAttribute("listaLivros", livros);
-            request.setAttribute("livroAlvo", livroAlvo); // Objeto Livro específico (se veio da lista)
+            request.setAttribute("livroAlvo", livroAlvo); // Objeto Livro específico (se veio da lista de livros)
 
             request.getRequestDispatcher("novo-emprestimo.jsp").forward(request, response);
 
