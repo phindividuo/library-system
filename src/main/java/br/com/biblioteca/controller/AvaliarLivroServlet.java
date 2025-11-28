@@ -85,7 +85,7 @@ public class AvaliarLivroServlet extends HttpServlet {
             dao.salvarAvaliacao(avaliacao);
 
             // Redireciona para "Meus Empréstimos" com mensagem
-            response.sendRedirect("meus-emprestimos?msg=Avaliacao registrada com sucesso!");
+            response.sendRedirect("meus-emprestimos?msg=Nota registrada com sucesso!");
 
         } catch (Exception e) {
             throw new ServletException("Erro ao salvar avaliação", e);

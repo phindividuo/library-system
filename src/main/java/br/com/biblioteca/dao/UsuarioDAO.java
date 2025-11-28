@@ -88,4 +88,26 @@ public class UsuarioDAO {
         }
         return lista;
     }
+    
+    // Bloqueia o usuário até uma data específica
+    public void bloquearUsuario(int idUsuario, java.time.LocalDate dataDesbloqueio) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE usuarios SET data_desbloqueio = ? WHERE id = ?";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setDate(1, Date.valueOf(dataDesbloqueio));
+            stmt.setInt(2, idUsuario);
+            stmt.executeUpdate();
+        }
+    }
+
+    // Remove o bloqueio (seta data para null)
+    public void desbloquearUsuario(int idUsuario) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE usuarios SET data_desbloqueio = NULL WHERE id = ?";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUsuario);
+            stmt.executeUpdate();
+        }
+    }
 }

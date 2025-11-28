@@ -1,78 +1,63 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
-
+<% request.setCharacterEncoding("UTF-8"); %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Avaliar Livro</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; }
-            
-            /* Barra Superior Simples */
-            .header { background-color: #007bff; color: white; padding: 15px; text-align: center; margin-bottom: 30px; }
-            .header h1 { margin: 0; font-size: 1.5rem; font-weight: 300; }
-
-            .container { max-width: 600px; margin: 0 auto 40px auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-            
-            h2 { color: #333; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
-            
-            label { display: block; margin-top: 20px; font-weight: 600; color: #555; margin-bottom: 5px; }
-            
-            select, textarea { 
-                width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; 
-                box-sizing: border-box; font-family: inherit; font-size: 1rem; transition: border-color 0.3s; 
-            }
-            select:focus, textarea:focus { border-color: #007bff; outline: none; }
-            
-            button { 
-                margin-top: 30px; padding: 15px; background-color: #28a745; color: white; 
-                border: none; cursor: pointer; width: 100%; font-size: 1.1rem; font-weight: bold; 
-                border-radius: 6px; transition: background-color 0.3s; 
-            }
-            button:hover { background-color: #218838; }
-            
-            .back-link { text-decoration: none; color: #6c757d; display: inline-block; margin-bottom: 20px; font-weight: 500; transition: color 0.2s; }
-            .back-link:hover { color: #333; }
-            
-            .book-info { background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 5px solid #007bff; }
-            .book-info strong { color: #333; }
-            .book-title { font-size: 1.2rem; display: block; margin-bottom: 5px; color: #007bff; }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h1>Sistema de Biblioteca</h1>
+<head>
+    <title>Avaliar Obra</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .header-avaliacao { 
+            background: var(--purple); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 8px 8px 0 0; 
+            /* As margens negativas puxam o header para a borda do container-white */
+            margin: -30px -30px 30px -30px; 
+            text-align: center; 
+        }
+        /* Ajuste para o link ficar fora e visível */
+        .top-nav-aval {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        
+        <!-- CORREÇÃO LAYOUT: Link fora do container branco para não sobrepor o header roxo -->
+        <div class="top-nav-aval">
+            <a href="meus-emprestimos" class="back-link">← Cancelar</a>
         </div>
 
-        <div class="container">
-            <a href="meus-emprestimos" class="back-link">← Voltar para Meus Empréstimos</a>
+        <div class="container-white">
             
-            <h2>Avaliar Obra</h2>
-            
-            <div class="book-info">
-                <span class="book-title">${livro.titulo}</span>
-                <strong>Autor:</strong> ${livro.autor}
+            <div class="header-avaliacao">
+                <span style="font-size: 1.5rem; display: block;">${empty livro ? param.titulo : livro.titulo}</span>
+                <span style="font-size: 0.9rem; opacity: 0.9;">${empty livro ? param.autor : livro.autor}</span>
             </div>
 
-            <form action="avaliar-livro" method="POST">
-                <input type="hidden" name="idLivro" value="${livro.id}">
+            <!-- CORREÇÃO ENCODING: Mensagens de erro/sucesso agora devem aparecer com acentos corretos -->
+            <c:if test="${not empty param.msg}"><div class="msg msg-ok">${param.msg}</div></c:if>
 
-                <label for="nota">Sua Nota (0 a 10):</label>
-                <select name="nota" id="nota" required>
-                    <option value="" disabled ${avaliacaoAnterior == null ? 'selected' : ''}>Selecione uma nota...</option>
+            <form action="avaliar-livro" method="POST">
+                <input type="hidden" name="idLivro" value="${empty livro ? param.idLivro : livro.id}">
+
+                <label>Qual nota você dá para este livro?</label>
+                <select name="nota" required>
+                    <option value="" disabled selected>Selecione de 0 a 10...</option>
                     <c:forEach begin="0" end="10" var="i">
-                        <!-- Se já tiver nota anterior, deixa selecionado -->
-                        <option value="${i}" ${avaliacaoAnterior.nota == i ? 'selected' : ''}>${i}</option>
+                        <option value="${i}" ${avaliacaoAnterior.nota == i ? 'selected' : ''}>${i} ${i==10 ? '⭐ Excelente' : ''}</option>
                     </c:forEach>
                 </select>
 
-                <label for="comentario">Comentário (Opcional):</label>
-                <textarea name="comentario" id="comentario" rows="5" placeholder="Escreva aqui o que você achou do livro...">${avaliacaoAnterior.comentario}</textarea>
+                <label>Deixe um comentário (opcional):</label>
+                <textarea name="comentario" rows="5" maxlength="500" placeholder="O que você achou da história?">${avaliacaoAnterior.comentario}</textarea>
 
-                <button type="submit">Salvar Avaliação</button>
+                <button type="submit" class="btn-purple full-width">Enviar Avaliação</button>
             </form>
         </div>
-    </body>
+    </div>
+</body>
 </html>

@@ -1,0 +1,270 @@
+/* =========================================
+   VARIAVEIS GLOBAIS & RESET
+   ========================================= */
+:root {
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --success-hover: #218838;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --warning-hover: #e0a800;
+    --info: #17a2b8;
+    --purple: #6f42c1;
+    --purple-hover: #59359a;
+    --dark: #343a40;
+    --light: #f8f9fa;
+    --bg: #f4f6f9;
+    --white: #ffffff;
+    --border-color: #dee2e6;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Utilitários de Layout para Telas de Login/Sucesso */
+body.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('../images/library.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+}
+
+a { text-decoration: none; color: var(--primary); font-weight: 500; transition: 0.2s; }
+a:hover { text-decoration: underline; color: var(--primary-hover); }
+
+/* =========================================
+   COMPONENTES: NAVBAR & HEADER
+   ========================================= */
+.navbar {
+    background-color: var(--dark); /* Padrão Admin */
+    color: var(--white);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar.navbar-leitor {
+    background-color: var(--primary); /* Azul para Leitor */
+}
+
+.navbar h2 { margin: 0; font-size: 1.3rem; font-weight: 400; }
+
+.logout-btn, .logout-link {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.logout-btn { border: 1px solid var(--danger); color: var(--danger); background: transparent; }
+.logout-btn:hover { background: var(--danger); color: white; text-decoration: none; }
+.logout-link:hover { color: white; text-decoration: underline; }
+
+/* =========================================
+   CONTAINERS & CARDS GERAIS
+   ========================================= */
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Card Branco Genérico (Usado em forms, login, etc) */
+.card, .container-white {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* =========================================
+   DASHBOARD CARDS (Admin & Leitor)
+   ========================================= */
+/* Grid para Admin */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+.dashboard-card {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-top: 4px solid var(--primary); /* Padrão Admin */
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+.dashboard-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+.dashboard-card h3 { margin-top: 0; font-size: 1.2rem; color: #333; }
+
+/* Action Cards (Leitor) - Horizontais */
+.action-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 6px solid #ccc;
+    color: #333;
+}
+.action-card:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; }
+
+/* Cores de Borda/Tema */
+.border-green, .green, .bg-success { border-color: var(--success); }
+.border-orange, .orange { border-color: var(--warning); } /* Warning no Bootstrap é amarelo/laranja */
+.border-purple, .purple { border-color: var(--purple); }
+.border-red, .red, .bg-danger { border-color: var(--danger); }
+.blue, .bg-blue { border-color: var(--primary); }
+
+.green h3, .text-green { color: var(--success); }
+.orange h3 { color: #fd7e14; }
+.purple h3 { color: var(--purple); }
+.red h3, .text-red { color: var(--danger); }
+.blue h3 { color: var(--primary); }
+
+.card-icon { font-size: 2rem; opacity: 0.8; }
+
+/* =========================================
+   TABELAS & LISTAS
+   ========================================= */
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+th { background-color: var(--primary); color: white; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; }
+tr:hover { background-color: #f1f1f1; }
+
+/* Variações de Header de Tabela */
+th.th-dark { background-color: var(--dark); }
+th.th-purple { background-color: var(--purple); }
+th.th-orange { background-color: #fd7e14; }
+th.th-red { background-color: var(--danger); }
+th.th-green { background-color: var(--success); }
+
+/* Badges e Status */
+.badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; display: inline-block; }
+.status-badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; border: 1px solid transparent; }
+
+.bg-success { background-color: var(--success); }
+.bg-warning { background-color: var(--warning); color: #333; }
+.bg-danger { background-color: var(--danger); }
+.bg-secondary { background-color: var(--secondary); }
+
+.st-ativo { background: #e6f9ed; color: var(--success); border-color: #b7ebc5; }
+.st-inativo, .st-fim { background: #e9ecef; color: var(--secondary); border-color: #dee2e6; }
+
+/* =========================================
+   FORMULÁRIOS & BOTÕES
+   ========================================= */
+label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 600; color: #555; }
+input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 5px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-family: inherit;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+.read-only { background-color: #e9ecef; color: #495057; pointer-events: none; }
+
+button, .btn {
+    display: inline-block;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+}
+button:hover, .btn:hover { background-color: var(--primary-hover); color: white; text-decoration: none; }
+button.full-width { width: 100%; margin-top: 20px; }
+
+/* Variantes de Botão */
+.btn-sm { padding: 5px 10px; font-size: 0.85rem; }
+.btn-success { background-color: var(--success); }
+.btn-success:hover { background-color: var(--success-hover); }
+.btn-warning { background-color: var(--warning); color: #333; }
+.btn-warning:hover { background-color: var(--warning-hover); }
+.btn-danger { background-color: var(--danger); }
+.btn-info { background-color: var(--info); }
+.btn-purple { background-color: var(--purple); }
+.btn-purple:hover { background-color: var(--purple-hover); }
+.btn-disabled { background-color: #e9ecef; color: #adb5bd; cursor: not-allowed; border-color: #dee2e6; pointer-events: none; }
+
+/* =========================================
+   ALERTS E MENSAGENS
+   ========================================= */
+.alert, .msg { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; font-weight: 500; }
+.alert-success, .msg-ok { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+.alert-danger, .msg-err, .error-msg, .erro { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+
+/* =========================================
+   ELEMENTOS ESPECÍFICOS
+   ========================================= */
+.back-link { display: inline-block; margin-bottom: 20px; color: var(--secondary); font-weight: bold; }
+.back-link:hover { color: var(--dark); }
+
+.review-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid #ccc;
+}
+.book-info { background: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+
+/* ---------------------------------------------------------
+   BACKGROUNDS ESPECÍFICOS DOS DASHBOARDS
+   --------------------------------------------------------- */
+
+/* Fundo para o Painel do Leitor */
+body.leitor-bg {
+    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                url('../images/library2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Fundo para o Painel do Admin */
+body.admin-bg {
+    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                url('../images/library3.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}

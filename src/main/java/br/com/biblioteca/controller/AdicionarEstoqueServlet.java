@@ -52,7 +52,7 @@ public class AdicionarEstoqueServlet extends HttpServlet {
             LivroDAO dao = new LivroDAO();
             dao.adicionarEstoque(id, qtdAdicional);
 
-            request.setAttribute("mensagem", "Estoque do livro '" + titulo + "' atualizado com sucesso! (+ " + qtdAdicional + " unidades)");
+            request.setAttribute("mensagem", "Estoque do livro atualizado com sucesso! (+ " + qtdAdicional + " unidades)");
             request.getRequestDispatcher("sucesso.jsp").forward(request, response);
 
         } catch (Exception e) {

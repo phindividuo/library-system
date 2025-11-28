@@ -12,6 +12,8 @@ package br.com.biblioteca.controller;
 
 import br.com.biblioteca.dao.EmprestimoDAO;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,13 +32,17 @@ public class RenovarEmprestimoServlet extends HttpServlet {
             
             EmprestimoDAO dao = new EmprestimoDAO();
             boolean sucesso = dao.renovar(idEmprestimo);
+            String msg;
             
             if (sucesso) {
                 // Sucesso redireciona de volta para a lista com mensagem (via URL parameter simples)
-                response.sendRedirect("meus-emprestimos?msg=Emprestimo renovado com sucesso! (+7 dias)");
+                msg = "Renovado com sucesso! (+7 dias)";
+                String msgEncoded = URLEncoder.encode(msg, StandardCharsets.UTF_8.toString());
+                response.sendRedirect("meus-emprestimos?msg=" + msgEncoded);
             } else {
-                // Falha se já foi renovado ou não está ativo
-                response.sendRedirect("meus-emprestimos?erro=Nao foi possivel renovar. Limite atingido ou emprestimo inativo.");
+                msg = "Limite atingido. Apenas renove uma vez cada livro.";
+                String msgEncoded = URLEncoder.encode(msg, StandardCharsets.UTF_8.toString());
+                response.sendRedirect("meus-emprestimos?erro=" + msgEncoded);
             }
 
         } catch (Exception e) {

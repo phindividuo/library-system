@@ -44,7 +44,7 @@ public class LivroServlet extends HttpServlet {
         String classifStr = request.getParameter("classificacao");
         String qtdStr = request.getParameter("quantidade");
 
-        // Preenche o Model
+        // Preenche o Model com dados de texto
         Livro livro = new Livro();
         livro.setIsbn(isbn);
         livro.setTitulo(titulo);
@@ -52,16 +52,35 @@ public class LivroServlet extends HttpServlet {
         livro.setEditora(editora);
         livro.setGenero(genero);
         
-        // Converte os números
+        // Converte os números com valores padrão em caso de erro/vazio
         try {
-            livro.setNumPaginas(Integer.parseInt(paginasStr));
-            livro.setAnoPublicacao(Integer.parseInt(anoStr));
-            livro.setClassificacao(Integer.parseInt(classifStr));
-            livro.setQuantidade(Integer.parseInt(qtdStr));
+            int paginas = (paginasStr == null || paginasStr.isEmpty()) ? 0 : Integer.parseInt(paginasStr);
+            livro.setNumPaginas(paginas);
         } catch (NumberFormatException e) {
-            // Se der erro na conversão, define 0 no número de páginas
-            System.out.println("Erro ao converter número: " + e.getMessage());
-            livro.setNumPaginas(0); 
+            livro.setNumPaginas(0);
+        }
+
+        try {
+            int ano = (anoStr == null || anoStr.isEmpty()) ? 0 : Integer.parseInt(anoStr);
+            livro.setAnoPublicacao(ano);
+        } catch (NumberFormatException e) {
+            livro.setAnoPublicacao(0);
+        }
+
+        try {
+            int classificacao = (classifStr == null || classifStr.isEmpty()) ? 0 : Integer.parseInt(classifStr);
+            livro.setClassificacao(classificacao);
+        } catch (NumberFormatException e) {
+            livro.setClassificacao(0);
+        }
+
+        try {
+            // AQUI ESTAVA O PROBLEMA: Se qtdStr viesse nulo ou erro em outros campos, podia falhar
+            // Agora garantimos que se for inválido, assume 1 (ou 0 se preferir)
+            int quantidade = (qtdStr == null || qtdStr.isEmpty()) ? 0 : Integer.parseInt(qtdStr);
+            livro.setQuantidade(quantidade);
+        } catch (NumberFormatException e) {
+            livro.setQuantidade(0); // Valor padrão seguro
         }
 
         try {

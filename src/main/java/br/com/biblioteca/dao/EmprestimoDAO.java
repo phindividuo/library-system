@@ -204,4 +204,53 @@ public class EmprestimoDAO {
         }
         return false;
     }
+    
+    // Buscar empréstimo por ID (Para cálculo de multas)
+    public Emprestimo buscarPorId(int id) throws SQLException, ClassNotFoundException {
+        // Reutiliza a lógica do listarGenerico filtrando por ID específico
+        List<Emprestimo> lista = listarGenerico("SELECT e.*, u.nome as u_nome, u.email as u_email, l.titulo as l_titulo, l.autor as l_autor FROM emprestimos e JOIN usuarios u ON e.usuario_id = u.id JOIN livros l ON e.livro_id = l.id WHERE e.id = ?", id);
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+
+    // Registrar Devolução (Transacional: Fecha empréstimo e repõe estoque)
+    public void registrarDevolucao(int idEmprestimo, int idLivro) throws SQLException, ClassNotFoundException {
+        String sqlUpdateEmprestimo = "UPDATE emprestimos SET data_devolucao_real = ?, status = 'FINALIZADO' WHERE id = ?";
+        String sqlUpdateLivro = "UPDATE livros SET quantidade = quantidade + 1 WHERE id = ?";
+
+        Connection conn = null;
+        try {
+            conn = ConnectionFactory.getConnection();
+            conn.setAutoCommit(false); // Transação
+
+            // 1. Atualiza Empréstimo (Data de hoje e Status)
+            try (PreparedStatement stmt1 = conn.prepareStatement(sqlUpdateEmprestimo)) {
+                stmt1.setDate(1, Date.valueOf(java.time.LocalDate.now())); // Hoje
+                stmt1.setInt(2, idEmprestimo);
+                stmt1.executeUpdate();
+            }
+
+            // 2. Repõe Estoque do Livro (+1)
+            try (PreparedStatement stmt2 = conn.prepareStatement(sqlUpdateLivro)) {
+                stmt2.setInt(1, idLivro);
+                stmt2.executeUpdate();
+            }
+
+            conn.commit();
+        } catch (Exception e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+            throw new SQLException("Erro ao registrar devolução", e);
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+    }
+    
+    // Listar APENAS ATIVOS (Para a tela de devolução do Admin ficar mais limpa)
+    public List<Emprestimo> listarAtivos() throws SQLException, ClassNotFoundException {
+        return listarGenerico("SELECT e.*, u.nome as u_nome, u.email as u_email, l.titulo as l_titulo, l.autor as l_autor FROM emprestimos e JOIN usuarios u ON e.usuario_id = u.id JOIN livros l ON e.livro_id = l.id WHERE e.status = 'ATIVO' ORDER BY e.data_devolucao_prevista ASC", null);
+    }
 }

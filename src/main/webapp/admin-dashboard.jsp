@@ -1,91 +1,78 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Painel Administrativo - Biblioteca</title>
-        <meta charset="UTF-8">
-        <style>
-            body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; }
-            
-            /* Barra Superior */
-            .navbar { background-color: #343a40; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-            .navbar h2 { margin: 0; font-size: 1.2rem; }
-            .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: bold; font-size: 0.9rem; border: 1px solid #ff6b6b; padding: 5px 10px; border-radius: 4px; }
-            .logout-btn:hover { background-color: #ff6b6b; color: white; }
+<head>
+    <title>Painel Administrativo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-bg">
+    <div class="navbar">
+        <h2>📚 Painel de Controle</h2>
+        <div>
+            <span>Olá, <strong>${sessionScope.usuarioLogado.nome}</strong></span> &nbsp;|&nbsp;
+            <a href="login" class="logout-btn">Sair</a>
+        </div>
+    </div>
 
-            /* Conteúdo Principal */
-            .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-            .welcome-msg { margin-bottom: 30px; color: #555; }
-
-            /* Grid de Cartões */
-            .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-            
-            .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #007bff; transition: transform 0.2s; }
-            .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-            
-            .card h3 { margin-top: 0; color: #333; }
-            .card p { color: #666; font-size: 0.9rem; }
-            .card a { display: inline-block; margin-top: 10px; text-decoration: none; color: #007bff; font-weight: bold; }
-            
-            /* Cores diferentes para seções diferentes */
-            .border-green { border-left-color: #28a745; }
-            .border-orange { border-left-color: #fd7e14; }
-            .border-purple { border-left-color: #6f42c1; }
-        </style>
-    </head>
-    <body>
-        <!-- Barra Superior -->
-        <div class="navbar">
-            <h2>📚 Sistema Biblioteca | Administração</h2>
-            <div>
-                <span>Olá, <strong>${sessionScope.usuarioLogado.nome}</strong></span>
-                &nbsp;|&nbsp;
-                <a href="login" class="logout-btn">Sair</a> <!-- O Logout é um GET no LoginServlet -->
-            </div>
+    <div class="container">
+        <div style="margin-bottom: 30px;">
+            <h1>Visão Geral</h1>
+            <p>Gerência do Sistema da Biblioteca.</p>
         </div>
 
-        <div class="container">
-            <div class="welcome-msg">
-                <h1>Painel de Controle</h1>
-                <p>Gerencie o acervo, usuários e empréstimos do sistema.</p>
+        <div class="grid">
+            <!-- Livros -->
+            <div class="dashboard-card blue">
+                <h3>📖 Acervo</h3>
+                <p>Gerenciamento do catálogo de livros.</p>
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <a href="listar-livros">Visualizar Acervo →</a>
+                    <a href="cadastro-livro.jsp">+ Cadastrar Novo Livro</a>
+                    <a href="listar-avaliacoes" style="color: var(--purple);">★ Ver Avaliações</a>
+                </div>
             </div>
 
-            <div class="dashboard-grid">
-                
-                <!-- Seção de Livros -->
-                <div class="card">
-                    <h3>📖 Acervo de Livros</h3>
-                    <p>Cadastre novos títulos ou visualize o catálogo.</p>
-                    <a href="listar-livros">Ver Todos os Livros &rarr;</a><br>
-                    <a href="cadastro-livro.html">+ Novo Livro</a><br>
-                    <a href="listar-avaliacoes" style="color: #6f42c1;">★ Ver Avaliações</a>
+            <!-- Estoque -->
+            <div class="dashboard-card green">
+                <h3>📦 Estoque</h3>
+                <p>Controle de estoque de exemplares.</p>
+                <div style="margin-top: 15px;">
+                    <a href="selecionar-livro-estoque" class="text-green">Gerenciar Entradas →</a>
                 </div>
+            </div>
 
-                <!-- Seção de Estoque -->
-                <div class="card border-green">
-                    <h3>📦 Estoque</h3>
-                    <p>Reponha unidades de livros esgotados.</p>
-                    <a href="selecionar-livro-estoque">Gerenciar Estoque &rarr;</a>
+            <!-- Usuários -->
+            <div class="dashboard-card orange">
+                <h3>👥 Usuários</h3>
+                <p>Leitores cadastrados no sistema.</p>
+                <div style="margin-top: 15px;">
+                    <a href="listar-usuarios" style="color: #fd7e14;">Listar Usuários →</a>
                 </div>
+            </div>
 
-                <!-- Seção de Usuários -->
-                <div class="card border-orange">
-                    <h3>👥 Usuários</h3>
-                    <p>Visualize os leitores cadastrados no sistema.</p>
-                    <a href="listar-usuarios">Ver Usuários &rarr;</a>
+            <!-- Empréstimos -->
+            <div class="dashboard-card purple">
+                <h3>🔄 Empréstimos</h3>
+                <p>Histórico dos empréstimos, registros de retiradas e devoluções.</p>
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <a href="listar-emprestimos" style="color: var(--purple);">Histórico Geral →</a>
+                    <a href="novo-emprestimo" style="color: var(--purple);">+ Novo Empréstimo</a>
+                    <a href="admin-devolucoes" style="color: var(--purple);">⬇ Registrar Devolução</a>
                 </div>
-
-                <!-- Seção de Empréstimos -->
-                <div class="card border-purple">
-                    <h3>🔄 Empréstimos</h3>
-                    <p>Controle quem pegou o quê e registre devoluções.</p>
-                    <a href="listar-emprestimos">Histórico Geral &rarr;</a><br>
-                    <a href="novo-emprestimo">Novo Empréstimo (Admin)</a>
+            </div>
+            
+            <!-- Penalidades -->
+            <div class="dashboard-card red">
+                <h3>🚫 Penalidades</h3>
+                <p>Gestão de multas e bloqueios.</p>
+                <div style="margin-top: 15px;">
+                    <a href="admin-penalidades" class="text-red">Ver Bloqueios Ativos →</a>
                 </div>
-
             </div>
         </div>
-    </body>
+    </div>
+</body>
 </html>
